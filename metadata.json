@@ -1,0 +1,6 @@
+{
+  "name": "BlockWall Access Control",
+  "description": "Access-restriction interface for BlockWall with access request submission and embedded destination preview.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
