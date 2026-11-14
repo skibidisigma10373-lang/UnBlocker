@@ -14,14 +14,17 @@ import {
 import { AnimatePresence, MotionConfig, motion } from 'motion/react';
 
 const TARGET_URL = 'https://duckmath.org/';
-const UNBLOCK_PHRASE = 'unblocked';
+const UNLOCK_TARGETS: Record<string, string> = {
+  unblocked: 'https://duckmath.org/',
+  'La calabaza': 'https://edgartapia-classroom-help.netlify.app',
+};
 const LOGO_SRC = '/assets/aistudio/image_c045ef_81ebd2c2.jpg';
 
 export default function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [reason, setReason] = useState('');
   const [validationError, setValidationError] = useState('');
-  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [unlockedUrl, setUnlockedUrl] = useState<string | null>(null);
   const [notification, setNotification] = useState<{
     id: number;
     message: string;
@@ -85,12 +88,19 @@ export default function App() {
       return;
     }
 
-    if (trimmed === UNBLOCK_PHRASE) {
+    const matchedTarget = Object.prototype.hasOwnProperty.call(
+      UNLOCK_TARGETS,
+      trimmed
+    )
+      ? UNLOCK_TARGETS[trimmed]
+      : undefined;
+
+    if (matchedTarget) {
       setIsModalOpen(false);
       setReason('');
       setValidationError('');
       setNotification(null);
-      setIsUnlocked(true);
+      setUnlockedUrl(matchedTarget);
       return;
     }
 
@@ -105,11 +115,11 @@ export default function App() {
   };
 
   const handleLockSession = () => {
-    setIsUnlocked(false);
+    setUnlockedUrl(null);
     setNotification(null);
   };
 
-  if (isUnlocked) {
+  if (unlockedUrl) {
     return (
       <MotionConfig reducedMotion="user">
         <div className="flex h-screen w-full flex-col bg-slate-50 text-slate-900">
@@ -133,13 +143,13 @@ export default function App() {
               /
             </span>
             <span className="hidden truncate font-mono text-xs text-slate-600 sm:inline">
-              {TARGET_URL}
+              {unlockedUrl}
             </span>
           </div>
 
           <div className="flex items-center gap-3 shrink-0">
             <a
-              href={TARGET_URL}
+              href={unlockedUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex min-h-[36px] items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition-colors duration-150 hover:bg-slate-50 hover:text-slate-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 whitespace-nowrap shrink-0"
@@ -160,8 +170,8 @@ export default function App() {
 
         <main className="relative flex-1 bg-white">
           <iframe
-            src={TARGET_URL}
-            title="DuckMath Embedded Destination"
+            src={unlockedUrl}
+            title={`Embedded Destination: ${unlockedUrl}`}
             className="h-full w-full border-0"
             allow="fullscreen; autoplay; clipboard-read; clipboard-write"
           />
